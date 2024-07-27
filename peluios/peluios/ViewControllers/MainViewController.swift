@@ -40,6 +40,8 @@ class MainViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Buscar", for: .normal)
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(searchButtonTap), for: .touchUpInside)
 
         debugPrint("UIButton Buscar se ha creado!")
         return button
@@ -99,6 +101,19 @@ private extension MainViewController {
             searchButton.leadingAnchor.constraint(equalTo: searchTextField.trailingAnchor, constant: 10),
             searchButton.trailingAnchor.constraint(equalTo: searchContainer.trailingAnchor, constant: -10)
         ])
+    }
+}
+
+// MARK: - Events
+private extension MainViewController {
+    @objc
+    func searchButtonTap() {
+        Task {
+            let service = SwapiNetworkService()
+            let response = await service.loadData(id: self.searchTextField.text ?? "")
+
+            debugPrint("Respuesta: \(response)")
+        }
     }
 }
 

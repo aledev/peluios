@@ -15,6 +15,8 @@
 		F32813542C55707D00C3BC34 /* peluiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32813532C55707D00C3BC34 /* peluiosTests.swift */; };
 		F328135E2C55707D00C3BC34 /* peluiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F328135D2C55707D00C3BC34 /* peluiosUITests.swift */; };
 		F32813602C55707D00C3BC34 /* peluiosUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F328135F2C55707D00C3BC34 /* peluiosUITestsLaunchTests.swift */; };
+		F32813702C5586CC00C3BC34 /* SwapiNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F328136F2C5586CC00C3BC34 /* SwapiNetworkService.swift */; };
+		F32813732C55883500C3BC34 /* CharacterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32813722C55883500C3BC34 /* CharacterModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		F32813592C55707D00C3BC34 /* peluiosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = peluiosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F328135D2C55707D00C3BC34 /* peluiosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = peluiosUITests.swift; sourceTree = "<group>"; };
 		F328135F2C55707D00C3BC34 /* peluiosUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = peluiosUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		F328136F2C5586CC00C3BC34 /* SwapiNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapiNetworkService.swift; sourceTree = "<group>"; };
+		F32813722C55883500C3BC34 /* CharacterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,9 +101,10 @@
 		F328133B2C55707700C3BC34 /* peluios */ = {
 			isa = PBXGroup;
 			children = (
+				F328136C2C55715D00C3BC34 /* ViewControllers */,
+				F328136E2C5586B500C3BC34 /* Services */,
 				F328133C2C55707700C3BC34 /* AppDelegate.swift */,
 				F328133E2C55707700C3BC34 /* SceneDelegate.swift */,
-				F328136C2C55715D00C3BC34 /* ViewControllers */,
 				F32813452C55707C00C3BC34 /* Assets.xcassets */,
 				F32813472C55707C00C3BC34 /* LaunchScreen.storyboard */,
 				F328134A2C55707C00C3BC34 /* Info.plist */,
@@ -130,6 +135,23 @@
 				F32813402C55707700C3BC34 /* MainViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		F328136E2C5586B500C3BC34 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F32813712C55882300C3BC34 /* Models */,
+				F328136F2C5586CC00C3BC34 /* SwapiNetworkService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F32813712C55882300C3BC34 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F32813722C55883500C3BC34 /* CharacterModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -263,8 +285,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F32813412C55707700C3BC34 /* MainViewController.swift in Sources */,
+				F32813732C55883500C3BC34 /* CharacterModel.swift in Sources */,
 				F328133D2C55707700C3BC34 /* AppDelegate.swift in Sources */,
 				F328133F2C55707700C3BC34 /* SceneDelegate.swift in Sources */,
+				F32813702C5586CC00C3BC34 /* SwapiNetworkService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
