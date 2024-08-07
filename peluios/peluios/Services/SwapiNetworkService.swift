@@ -33,4 +33,30 @@ class SwapiNetworkService {
 
         return jsonData
     }
+    
+    
+    func loadVehiculeData(vehicleUrl: String) async -> VehiculeModel? {
+        guard let url = URL(string: vehicleUrl) else {
+            return nil
+        }
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+
+        guard let (data, response) = try? await URLSession.shared.data(for: urlRequest) else {
+            return nil
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            return nil
+        }
+        
+        guard let jsonData = try? JSONDecoder().decode(VehiculeModel.self, from: data) else {
+            return nil
+        }
+
+        return jsonData
+    }
+    
 }
