@@ -249,9 +249,10 @@ var vehiculeUrl: [URL] = []
 // MARK: - Events
 private extension MainViewController {
     @objc
-    let service = SwapiNetworkService()
+  
     func searchButtonTap() {
         Task {
+            let service = SwapiNetworkService()
             let characterId = self.searchTextField.text ?? ""
             let response = await service.loadData(id: characterId)
             guard let image = ImagesManager.images[characterId] else {
@@ -273,10 +274,12 @@ private extension MainViewController {
             debugPrint("Respuesta: \(String(describing: response))")
         }
     }
-    
+    @objc
     func searchForVehiculeButtonTap() {
+        
         Task {
-            let response = await service.loadVehiculeData(vehicleUrl: vehiculeUrl)
+            let service = SwapiNetworkService()
+            let response = await service.loadVehiculeData(vehicleUrl: vehiculeUrl[0])
             
             debugPrint("Vehiculo: \(String(describing: response))")
         }
