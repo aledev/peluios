@@ -7,7 +7,32 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+struct Device {
+    let title: String
+    let imageName: String
+}
+
+let house = [
+    Device(title: "Laptop", imageName: "laptopcomputer"),
+    Device(title: "Mac mini", imageName: "macmini"),
+    Device(title: "Mac Pro", imageName: "macpro.gen3"),
+    Device(title: "Pantallas", imageName: "display.2"),
+    Device(title: "Apple TV", imageName: "appletv")
+]
+
+class MainViewController: UIViewController, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        house.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UICollectionViewCell", for: indexPath)
+        cell.backgroundColor = .white
+        
+        return cell
+    }
+    
     // MARK: - Properties
     private lazy var labelView: UILabel = {
         let label = UILabel(frame: .zero)
@@ -18,6 +43,19 @@ class MainViewController: UIViewController {
         debugPrint("UILabel Titulo se ha creado!")
         return label
     }()
+    
+    private let swiftBetaCollectionView: UICollectionView = {
+                
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = .init(width: 200, height: 200)
+        
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .blue
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "UICollectionViewCell")
+        
+        return collectionView
+    }()
 
     private lazy var searchContainer: UIView = {
         let view = UIView(frame: .zero)
@@ -25,6 +63,12 @@ class MainViewController: UIViewController {
 
         return view
     }()
+    
+//    private lazy var carousel: UICollectionView = {
+//        let view = UICollectionView(frame: .zero)
+//        view.scrollDirection = horizonta
+//       
+//    }()
     
     private lazy var characterNameLabel: UILabel = {
         let label = UILabel(frame: .zero)
@@ -95,6 +139,17 @@ class MainViewController: UIViewController {
         return button
     }()
     
+    private func firstList() -> UICollectionView  {
+        var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+             configuration.headerMode = .supplementary
+             let layout = UICollectionViewCompositionalLayout.list(using: configuration)
+             let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+             view.backgroundColor = .systemBackground
+             view.translatesAutoresizingMaskIntoConstraints = false
+             return view
+    }
+    
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(frame: .zero)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -107,11 +162,13 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+      
+        setupCollectionView()
     }
 }
 
 // MARK: - UI Methods
-private extension MainViewController {
+extension MainViewController {
     func setupUI() {
         setupBackground()
         setupLabelView()
@@ -124,6 +181,16 @@ private extension MainViewController {
         setupCharacterHairColorLabel()
         setupCharacterGenderLabel()
         setupSearchVehiculeButton()
+    }
+    
+    func setupCollectionView() {
+        self.view.addSubview(swiftBetaCollectionView)
+        NSLayoutConstraint.activate([
+                  swiftBetaCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
+                  swiftBetaCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                  swiftBetaCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                  swiftBetaCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+              ])
     }
 
     func setupBackground() {
