@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct VehiculeModel: Codable{
+struct VehicleModel: Codable{
     let name: String
     let model: String
     let manufacturer: String
@@ -42,6 +42,5 @@ struct VehiculeModel: Codable{
         case created
         case edited
         case url
-    
     }
 }

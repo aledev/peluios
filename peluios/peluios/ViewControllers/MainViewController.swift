@@ -7,33 +7,12 @@
 
 import UIKit
 
-struct Device {
-    let title: String
-    let imageName: String
-}
-
-let house = [
-    Device(title: "Laptop", imageName: "laptopcomputer"),
-    Device(title: "Mac mini", imageName: "macmini"),
-    Device(title: "Mac Pro", imageName: "macpro.gen3"),
-    Device(title: "Pantallas", imageName: "display.2"),
-    Device(title: "Apple TV", imageName: "appletv")
-]
-
-class MainViewController: UIViewController, UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        house.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UICollectionViewCell", for: indexPath)
-        cell.backgroundColor = .white
-        
-        return cell
-    }
-    
+class MainViewController: UIViewController {
     // MARK: - Properties
+    private var vehicles: [VehicleModel] = []
+    var vehicleUrl: [URL] = []
+
+    // MARK: - UI Components
     private lazy var labelView: UILabel = {
         let label = UILabel(frame: .zero)
         label.text = "SWAPI Test App"
@@ -43,19 +22,6 @@ class MainViewController: UIViewController, UICollectionViewDataSource {
         debugPrint("UILabel Titulo se ha creado!")
         return label
     }()
-    
-    private let swiftBetaCollectionView: UICollectionView = {
-                
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = .init(width: 200, height: 200)
-        
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .blue
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "UICollectionViewCell")
-        
-        return collectionView
-    }()
 
     private lazy var searchContainer: UIView = {
         let view = UIView(frame: .zero)
@@ -63,12 +29,6 @@ class MainViewController: UIViewController, UICollectionViewDataSource {
 
         return view
     }()
-    
-//    private lazy var carousel: UICollectionView = {
-//        let view = UICollectionView(frame: .zero)
-//        view.scrollDirection = horizonta
-//       
-//    }()
     
     private lazy var characterNameLabel: UILabel = {
         let label = UILabel(frame: .zero)
@@ -115,7 +75,7 @@ class MainViewController: UIViewController, UICollectionViewDataSource {
         debugPrint("UITextField UserID se ha creado!")
         return textView
     }()
-//MARK: -test
+
     private lazy var searchButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -148,8 +108,7 @@ class MainViewController: UIViewController, UICollectionViewDataSource {
              view.translatesAutoresizingMaskIntoConstraints = false
              return view
     }
-    
-    
+
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(frame: .zero)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -158,12 +117,29 @@ class MainViewController: UIViewController, UICollectionViewDataSource {
         return imageView
     }()
 
+    private let vehicleCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: UICollectionViewLayout()
+        )
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = .zero
+
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .blue
+        collectionView.register(
+            VehicleCellView.self,
+            forCellWithReuseIdentifier: VehicleCellView.identifier
+        )
+        collectionView.isHidden = true
+
+        return collectionView
+    }()
+
     // MARK: - Initializers
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-      
-        setupCollectionView()
     }
 }
 
@@ -181,16 +157,7 @@ extension MainViewController {
         setupCharacterHairColorLabel()
         setupCharacterGenderLabel()
         setupSearchVehiculeButton()
-    }
-    
-    func setupCollectionView() {
-        self.view.addSubview(swiftBetaCollectionView)
-        NSLayoutConstraint.activate([
-                  swiftBetaCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
-                  swiftBetaCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                  swiftBetaCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                  swiftBetaCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-              ])
+        setupCollectionView()
     }
 
     func setupBackground() {
@@ -287,68 +254,88 @@ extension MainViewController {
         ])
     }
 
-    func loadImageFromURL(_ urlString: String) {
-        guard let url = URL(string: urlString) else {
-            debugPrint("Invalid URL string.")
-            return
-        }
-
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                debugPrint("Error loading image: \(error)")
-                return
-            }
-
-            guard let data = data, let image = UIImage(data: data) else {
-                debugPrint("Error: No data or data is not a valid image.")
-                return
-            }
-
-            DispatchQueue.main.async {
-                self.imageView.image = image
-            }
-        }.resume()
+    func setupCollectionView() {
+        self.view.addSubview(vehicleCollectionView)
+        NSLayoutConstraint.activate([
+            vehicleCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            vehicleCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            vehicleCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            vehicleCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
     }
 }
-
-var vehiculeUrl: [URL] = []
 
 // MARK: - Events
 private extension MainViewController {
     @objc
-  
     func searchButtonTap() {
         Task {
             let service = SwapiNetworkService()
+            let imageService = ImageService()
+
             let characterId = self.searchTextField.text ?? ""
-            let response = await service.loadData(id: characterId)
             guard let image = ImagesManager.images[characterId] else {
                 return
             }
-            loadImageFromURL(image)
-            if let character = response {
-                DispatchQueue.main.async {
-                    self.characterNameLabel.text = character.name;
-                    self.characterHeightLabel.text = character.height;
-                    self.characterHairColorLabel.text = character.hairColor;
-                    self.characterGenderLabel.text = character.gender;
-                    vehiculeUrl = character.vehicles;
-                }
+
+            // Opción 1: Task grupal
+            async let characterRequest = await service.loadData(id: characterId)
+            async let imageRequest = await imageService.loadImageFromURL(image)
+
+            let (characterResponse, imageResponse) = await (characterRequest, imageRequest)
+
+            // Opción 2: Task individuales
+            //let response = await service.loadData(id: characterId)
+            //let characterImage = await imageService.loadImageFromURL(image)
+
+            guard let characterResponse, let imageResponse else {
+                return
             }
-            
-            self.searchVehiculeButton.isHidden = false
-            
-            debugPrint("Respuesta: \(String(describing: response))")
+
+            DispatchQueue.main.async { [weak self] in
+                self?.characterNameLabel.text = characterResponse.name
+                self?.characterHeightLabel.text = characterResponse.height
+                self?.characterHairColorLabel.text = characterResponse.hairColor
+                self?.characterGenderLabel.text = characterResponse.gender
+                self?.vehicleUrl = characterResponse.vehicles
+                self?.imageView.image = UIImage(data: imageResponse)
+                self?.searchVehiculeButton.isHidden = false
+            }
+
+            debugPrint("Respuesta: \(String(describing: characterResponse))")
         }
     }
+
     @objc
     func searchForVehiculeButtonTap() {
-        
         Task {
             let service = SwapiNetworkService()
-            let response = await service.loadVehiculeData(vehicleUrl: vehiculeUrl[0])
-            
-            debugPrint("Vehiculo: \(String(describing: response))")
+            //let response = await service.loadVehiculeData(vehicleUrl: vehiculeUrl[0])
+            //debugPrint("Vehiculo: \(String(describing: response))")
+
+            // TODO: Crear task grupal y obtener todos los vehículos
+            // Refs: https://www.hackingwithswift.com/quick-start/concurrency/whats-the-difference-between-await-and-async-let
+            // Refs: https://medium.com/axel-springer-tech/async-let-and-taskgroup-in-swift-a4e22edffbe6
         }
+    }
+}
+
+// MARK: - UICollectionView Delegates
+extension MainViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return vehicles.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: VehicleCellView.identifier,
+            for: indexPath) as? VehicleCellView else {
+            return UICollectionViewCell()
+        }
+
+        let vehicle = vehicles[indexPath.row]
+        cell.configure(with: vehicle)
+
+        return cell
     }
 }
